@@ -43,6 +43,23 @@
             "Dranzd\\StorebunkAccounting\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "test:coverage": "phpunit --coverage-html coverage",
+        "phpstan": "phpstan analyse",
+        "phpcs": "phpcs",
+        "phpcbf": "phpcbf",
+        "check": [
+            "@phpstan",
+            "@phpcs",
+            "@test"
+        ]
+    },
     "minimum-stability": "dev",
     "prefer-stable": true
 }
