@@ -56,6 +56,17 @@ This document defines the complete architecture and implementation plan for the 
 - Read models tagged by tenant with row-level security where possible
 - Cross-tenant operations are restricted and audited
 
+#### Leveraging Common Libraries
+This library builds upon existing Dranzd common libraries to avoid reinventing infrastructure:
+
+- **`dranzd/common-event-sourcing`** - Provides event store interfaces, event bus, and event sourcing infrastructure
+- **`dranzd/common-utils`** - Shared utilities for common operations
+- **`dranzd/common-domain-assert`** - Domain assertion helpers for enforcing invariants
+- **`dranzd/common-valueobject`** - Base value object implementations (Money, DateTime, etc.)
+- **`dranzd/common-cqrs`** - Command and query bus infrastructure, command handlers
+
+These libraries provide battle-tested implementations of infrastructure concerns, allowing this library to focus on accounting domain logic.
+
 ---
 
 ## 2. Implementation Phases & Milestones

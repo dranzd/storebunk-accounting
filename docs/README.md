@@ -23,8 +23,21 @@ _As the project evolves, expand this section with concrete modules and examples.
 
 - PHP 8.0+ (recommended to match the dev environment)
 - Composer
+- SSH access to private GitHub repositories (for dependencies)
 
-### 2.2. Install via Composer
+### 2.2. Private Dependencies
+
+This library depends on several private Dranzd common libraries:
+
+- `dranzd/common-event-sourcing` - Event sourcing infrastructure
+- `dranzd/common-utils` - Shared utilities
+- `dranzd/common-domain-assert` - Domain assertion helpers
+- `dranzd/common-valueobject` - Common value objects
+- `dranzd/common-cqrs` - CQRS infrastructure
+
+**For developers:** Ensure your SSH key is added to GitHub and has access to these repositories.
+
+### 2.3. Install via Composer
 
 ```bash
 composer require dranzd/storebunk-accounting
@@ -32,7 +45,7 @@ composer require dranzd/storebunk-accounting
 
 (If the package is not yet published, require it via VCS or a path repository in your root `composer.json`.)
 
-### 2.3. Autoloading
+### 2.4. Autoloading
 
 The library is autoloaded via PSR‑4:
 
@@ -83,6 +96,23 @@ When concrete services and value objects are defined, add:
 
 - Docker and Docker Compose installed.
 - Unix-like shell (Linux/macOS or WSL on Windows) to run the `utils` script.
+- SSH key configured with GitHub access to private Dranzd repositories.
+
+**Setting up SSH access:**
+
+1. Generate an SSH key if you don't have one:
+   ```bash
+   ssh-keygen -t ed25519 -C "your_email@example.com"
+   ```
+
+2. Add your SSH key to your GitHub account (Settings → SSH and GPG keys).
+
+3. Test your connection:
+   ```bash
+   ssh -T git@github.com
+   ```
+
+4. Ensure your SSH key is available in the Docker container by mounting your SSH directory (already configured in `docker-compose.yml` if needed).
 
 ### 4.3. Starting the Dev Environment
 
