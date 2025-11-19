@@ -21,7 +21,7 @@ _As the project evolves, expand this section with concrete modules and examples.
 
 ### 2.1. Requirements
 
-- PHP 8.0+ (recommended to match the dev environment)
+- PHP 8.3+ (recommended to match the dev environment)
 - Composer
 - SSH access to private GitHub repositories (for dependencies)
 

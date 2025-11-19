@@ -1,0 +1,28 @@
+parameters:
+    level: 5
+    paths:
+        - src
+        - tests
+
+    # Ignore errors from external dependencies
+    excludePaths:
+        - vendor
+
+    # Bootstrap file for autoloading
+    bootstrapFiles:
+        - vendor/autoload.php
+
+    # Additional checks
+    checkMissingIterableValueType: true
+    checkGenericClassInNonGenericObjectType: true
+
+    # Report unknown types
+    reportUnmatchedIgnoredErrors: false
+
+    # Ignore specific errors
+    ignoreErrors:
+        # Allow dynamic properties in tests
+        - '#Access to an undefined property#'
+
+        # Allow array access on objects in tests
+        - '#Cannot access offset .* on#'

@@ -4,7 +4,7 @@
     "type": "library",
     "license": "MIT",
     "require": {
-        "php": "^8.0",
+        "php": "^8.3",
         "dranzd/common-event-sourcing": "dev-main",
         "dranzd/common-utils": "dev-main",
         "dranzd/common-domain-assert": "dev-main",
@@ -12,7 +12,7 @@
         "dranzd/common-cqrs": "dev-main"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^11.0"
     },
     "repositories": [
         {
