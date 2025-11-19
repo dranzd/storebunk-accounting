@@ -5,11 +5,11 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
-        "dranzd/common-event-sourcing": "dev-main",
-        "dranzd/common-utils": "dev-main",
-        "dranzd/common-domain-assert": "dev-main",
-        "dranzd/common-valueobject": "dev-main",
-        "dranzd/common-cqrs": "dev-main"
+        "dranzd/common-event-sourcing": "dev-master",
+        "dranzd/common-utils": "dev-master",
+        "dranzd/common-domain-assert": "dev-master",
+        "dranzd/common-valueobject": "dev-master",
+        "dranzd/common-cqrs": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "^11.0",
