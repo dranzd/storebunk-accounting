@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Dranzd\StorebunkAccounting\Domain\Accounting\Events;
 
-use DateTimeImmutable;
 use DateTimeInterface;
+use Dranzd\Common\EventSourcing\Domain\EventSourcing\AbstractAggregateEvent;
 
 /**
  * Journal Entry Created Event
@@ -14,27 +14,40 @@ use DateTimeInterface;
  *
  * @package Dranzd\StorebunkAccounting\Domain\Accounting\Events
  */
-final readonly class JournalEntryCreated implements DomainEvent
+final class JournalEntryCreated extends AbstractAggregateEvent
 {
-    public function __construct(
-        private string $eventId,
-        private string $journalEntryId,
-        private DateTimeInterface $date,
-        private string $description,
-        private array $lines,
-        private DateTimeImmutable $occurredAt
+    private string $journalEntryId;
+    private DateTimeInterface $date;
+    private string $description;
+    private array $lines;
+
+    private function __construct(
+        string $journalEntryId,
+        DateTimeInterface $date,
+        string $description,
+        array $lines
     ) {
+        parent::__construct();
+        $this->journalEntryId = $journalEntryId;
+        $this->date = $date;
+        $this->description = $description;
+        $this->lines = $lines;
     }
 
-    public function getEventId(): string
-    {
-        return $this->eventId;
+    public static function occur(
+        string $journalEntryId,
+        DateTimeInterface $date,
+        string $description,
+        array $lines
+    ): self {
+        return new self($journalEntryId, $date, $description, $lines);
     }
 
-    public function getAggregateId(): string
+    public static function expectedMessageName(): string
     {
-        return $this->journalEntryId;
+        return 'storebunk.accounting.journal_entry.created';
     }
+
 
     public function getJournalEntryId(): string
     {
@@ -56,20 +69,13 @@ final readonly class JournalEntryCreated implements DomainEvent
         return $this->lines;
     }
 
-    public function getOccurredAt(): DateTimeImmutable
-    {
-        return $this->occurredAt;
-    }
-
-    public function toArray(): array
+    public function toPayload(): array
     {
         return [
-            'eventId' => $this->eventId,
             'journalEntryId' => $this->journalEntryId,
-            'date' => $this->date->format('Y-m-d'),
+            'date' => $this->date->format('Y-m-d H:i:s'),
             'description' => $this->description,
             'lines' => $this->lines,
-            'occurredAt' => $this->occurredAt->format(DateTimeInterface::ATOM),
         ];
     }
 }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Dranzd\StorebunkAccounting\Domain\Accounting\Events;
 
 use DateTimeImmutable;
-use DateTimeInterface;
+use Dranzd\Common\EventSourcing\Domain\EventSourcing\AbstractAggregateEvent;
 
 /**
  * Journal Entry Posted Event
@@ -15,25 +15,32 @@ use DateTimeInterface;
  *
  * @package Dranzd\StorebunkAccounting\Domain\Accounting\Events
  */
-final readonly class JournalEntryPosted implements DomainEvent
+final class JournalEntryPosted extends AbstractAggregateEvent
 {
-    public function __construct(
-        private string $eventId,
-        private string $journalEntryId,
-        private DateTimeImmutable $postedAt,
-        private DateTimeImmutable $occurredAt
+    private string $journalEntryId;
+    private DateTimeImmutable $postedAt;
+
+    private function __construct(
+        string $journalEntryId,
+        DateTimeImmutable $postedAt
     ) {
+        parent::__construct();
+        $this->journalEntryId = $journalEntryId;
+        $this->postedAt = $postedAt;
     }
 
-    public function getEventId(): string
-    {
-        return $this->eventId;
+    public static function occur(
+        string $journalEntryId,
+        DateTimeImmutable $postedAt
+    ): self {
+        return new self($journalEntryId, $postedAt);
     }
 
-    public function getAggregateId(): string
+    public static function expectedMessageName(): string
     {
-        return $this->journalEntryId;
+        return 'storebunk.accounting.journal_entry.posted';
     }
+
 
     public function getJournalEntryId(): string
     {
@@ -45,18 +52,11 @@ final readonly class JournalEntryPosted implements DomainEvent
         return $this->postedAt;
     }
 
-    public function getOccurredAt(): DateTimeImmutable
-    {
-        return $this->occurredAt;
-    }
-
-    public function toArray(): array
+    public function toPayload(): array
     {
         return [
-            'eventId' => $this->eventId,
             'journalEntryId' => $this->journalEntryId,
-            'postedAt' => $this->postedAt->format(DateTimeInterface::ATOM),
-            'occurredAt' => $this->occurredAt->format(DateTimeInterface::ATOM),
+            'postedAt' => $this->postedAt->format('Y-m-d H:i:s'),
         ];
     }
 }

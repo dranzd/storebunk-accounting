@@ -48,7 +48,7 @@ final class JournalEntryTest extends TestCase
             ]
         );
 
-        $events = $entry->getUncommittedEvents();
+        $events = $entry->getRecordedEvents();
 
         $this->assertCount(1, $events);
         $this->assertInstanceOf(JournalEntryCreated::class, $events[0]);
@@ -148,7 +148,7 @@ final class JournalEntryTest extends TestCase
             ]
         );
 
-        $entry->clearUncommittedEvents(); // Clear creation event
+        $entry->popRecordedEvents(); // Clear creation event
         $entry->post();
 
         $this->assertEquals(EntryStatus::Posted, $entry->getStatus());
@@ -167,10 +167,10 @@ final class JournalEntryTest extends TestCase
             ]
         );
 
-        $entry->clearUncommittedEvents();
+        $entry->popRecordedEvents();
         $entry->post();
 
-        $events = $entry->getUncommittedEvents();
+        $events = $entry->getRecordedEvents();
 
         $this->assertCount(1, $events);
         $this->assertInstanceOf(JournalEntryPosted::class, $events[0]);
@@ -199,19 +199,23 @@ final class JournalEntryTest extends TestCase
 
     public function test_can_reconstitute_entry_from_events(): void
     {
-        $createdEvent = new JournalEntryCreated(
-            'evt-123',
+        $createdEvent = JournalEntryCreated::occur(
             'JE-001',
             new DateTime('2025-11-19'),
             'Cash sale',
             [
                 ['accountId' => 'cash', 'amount' => 500.00, 'side' => 'debit'],
                 ['accountId' => 'sales', 'amount' => 500.00, 'side' => 'credit'],
-            ],
-            new \DateTimeImmutable()
+            ]
         );
 
-        $entry = JournalEntry::reconstitute([$createdEvent]);
+        // Reconstitute from history (creates new instance internally)
+        $dummyEntry = JournalEntry::create('temp', new DateTime(), 'temp', [
+            JournalLine::create('a', 1.0, Side::Debit),
+            JournalLine::create('b', 1.0, Side::Credit),
+        ]);
+        /** @var JournalEntry $entry */
+        $entry = $dummyEntry->reconstituteFromHistory([$createdEvent]);
 
         $this->assertEquals('JE-001', $entry->getId());
         $this->assertEquals('Cash sale', $entry->getDescription());
@@ -221,26 +225,28 @@ final class JournalEntryTest extends TestCase
 
     public function test_can_reconstitute_posted_entry_from_events(): void
     {
-        $createdEvent = new JournalEntryCreated(
-            'evt-123',
+        $createdEvent = JournalEntryCreated::occur(
             'JE-001',
             new DateTime('2025-11-19'),
             'Cash sale',
             [
                 ['accountId' => 'cash', 'amount' => 500.00, 'side' => 'debit'],
                 ['accountId' => 'sales', 'amount' => 500.00, 'side' => 'credit'],
-            ],
-            new \DateTimeImmutable()
+            ]
         );
 
-        $postedEvent = new JournalEntryPosted(
-            'evt-456',
+        $postedEvent = JournalEntryPosted::occur(
             'JE-001',
-            new \DateTimeImmutable(),
             new \DateTimeImmutable()
         );
 
-        $entry = JournalEntry::reconstitute([$createdEvent, $postedEvent]);
+        // Reconstitute from history (creates new instance internally)
+        $dummyEntry = JournalEntry::create('temp', new DateTime(), 'temp', [
+            JournalLine::create('a', 1.0, Side::Debit),
+            JournalLine::create('b', 1.0, Side::Credit),
+        ]);
+        /** @var JournalEntry $entry */
+        $entry = $dummyEntry->reconstituteFromHistory([$createdEvent, $postedEvent]);
 
         $this->assertEquals(EntryStatus::Posted, $entry->getStatus());
         $this->assertNotNull($entry->getPostedAt());
@@ -258,10 +264,10 @@ final class JournalEntryTest extends TestCase
             ]
         );
 
-        $this->assertCount(1, $entry->getUncommittedEvents());
+        $this->assertCount(1, $entry->getRecordedEvents());
 
-        $entry->clearUncommittedEvents();
+        $entry->popRecordedEvents();
 
-        $this->assertCount(0, $entry->getUncommittedEvents());
+        $this->assertCount(0, $entry->getRecordedEvents());
     }
 }

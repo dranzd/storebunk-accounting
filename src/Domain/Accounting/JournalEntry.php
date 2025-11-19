@@ -6,7 +6,8 @@ namespace Dranzd\StorebunkAccounting\Domain\Accounting;
 
 use DateTimeImmutable;
 use DateTimeInterface;
-use Dranzd\StorebunkAccounting\Domain\Accounting\Events\DomainEvent;
+use Dranzd\Common\EventSourcing\Domain\EventSourcing\AggregateRoot;
+use Dranzd\Common\EventSourcing\Domain\EventSourcing\AggregateRootTrait;
 use Dranzd\StorebunkAccounting\Domain\Accounting\Events\JournalEntryCreated;
 use Dranzd\StorebunkAccounting\Domain\Accounting\Events\JournalEntryPosted;
 use InvalidArgumentException;
@@ -26,8 +27,10 @@ use RuntimeException;
  *
  * @package Dranzd\StorebunkAccounting\Domain\Accounting
  */
-final class JournalEntry
+final class JournalEntry implements AggregateRoot
 {
+    use AggregateRootTrait;
+
     private string $id;
     private DateTimeInterface $date;
     private string $description;
@@ -35,9 +38,6 @@ final class JournalEntry
     private array $lines = [];
     private EntryStatus $status;
     private ?DateTimeImmutable $postedAt = null;
-
-    /** @var DomainEvent[] */
-    private array $uncommittedEvents = [];
 
     private function __construct()
     {
@@ -61,6 +61,7 @@ final class JournalEntry
         array $lines
     ): self {
         $entry = new self();
+        $entry->id = $id; // Set ID before recording events
 
         // Validate before creating event
         self::validateId($id);
@@ -68,23 +69,25 @@ final class JournalEntry
         self::validateLines($lines);
         self::validateBalance($lines);
 
-        // Create event
-        $event = new JournalEntryCreated(
-            eventId: self::generateEventId(),
-            journalEntryId: $id,
-            date: $date,
-            description: $description,
-            lines: array_map(fn(JournalLine $line) => $line->toArray(), $lines),
-            occurredAt: new DateTimeImmutable()
+        // Record event using trait's recordThat method
+        $entry->recordThat(
+            JournalEntryCreated::occur(
+                $id,
+                $date,
+                $description,
+                array_map(fn(JournalLine $line) => $line->toArray(), $lines)
+            )
         );
 
-        // Apply event to set state
-        $entry->applyJournalEntryCreated($event);
-
-        // Record event for persistence
-        $entry->recordEvent($event);
-
         return $entry;
+    }
+
+    /**
+     * Get the aggregate root UUID (uses ID as UUID)
+     */
+    final public function getAggregateRootUuid(): string
+    {
+        return $this->id;
     }
 
     /**
@@ -101,21 +104,22 @@ final class JournalEntry
         // Re-validate invariants before posting
         self::validateBalance($this->lines);
 
-        $event = new JournalEntryPosted(
-            eventId: self::generateEventId(),
-            journalEntryId: $this->id,
-            postedAt: new DateTimeImmutable(),
-            occurredAt: new DateTimeImmutable()
+        // Record event using trait's recordThat method
+        $this->recordThat(
+            JournalEntryPosted::occur(
+                $this->id,
+                new DateTimeImmutable()
+            )
         );
-
-        $this->applyJournalEntryPosted($event);
-        $this->recordEvent($event);
     }
 
     /**
      * Apply JournalEntryCreated event
+     * Called automatically by AggregateRootTrait when event is recorded
+     *
+     * @phpstan-ignore-next-line Method is called dynamically by AggregateRootTrait
      */
-    private function applyJournalEntryCreated(JournalEntryCreated $event): void
+    private function applyOnJournalEntryCreated(JournalEntryCreated $event): void
     {
         $this->id = $event->getJournalEntryId();
         $this->date = $event->getDate();
@@ -135,8 +139,11 @@ final class JournalEntry
 
     /**
      * Apply JournalEntryPosted event
+     * Called automatically by AggregateRootTrait when event is recorded
+     *
+     * @phpstan-ignore-next-line Method is called dynamically by AggregateRootTrait
      */
-    private function applyJournalEntryPosted(JournalEntryPosted $event): void
+    private function applyOnJournalEntryPosted(JournalEntryPosted $event): void
     {
         $this->status = EntryStatus::Posted;
         $this->postedAt = $event->getPostedAt();
@@ -192,59 +199,8 @@ final class JournalEntry
         return $this->postedAt;
     }
 
-    /**
-     * Get uncommitted domain events
-     *
-     * @return DomainEvent[]
-     */
-    final public function getUncommittedEvents(): array
-    {
-        return $this->uncommittedEvents;
-    }
-
-    /**
-     * Clear uncommitted events (after persistence)
-     */
-    final public function clearUncommittedEvents(): void
-    {
-        $this->uncommittedEvents = [];
-    }
-
-    /**
-     * Reconstitute aggregate from events (for event sourcing)
-     *
-     * @param DomainEvent[] $events
-     */
-    final public static function reconstitute(array $events): self
-    {
-        $entry = new self();
-
-        foreach ($events as $event) {
-            $entry->apply($event);
-        }
-
-        return $entry;
-    }
-
-    /**
-     * Apply a domain event to the aggregate
-     */
-    private function apply(DomainEvent $event): void
-    {
-        match (true) {
-            $event instanceof JournalEntryCreated => $this->applyJournalEntryCreated($event),
-            $event instanceof JournalEntryPosted => $this->applyJournalEntryPosted($event),
-            default => throw new RuntimeException('Unknown event type: ' . get_class($event)),
-        };
-    }
-
-    /**
-     * Record an event for later persistence
-     */
-    private function recordEvent(DomainEvent $event): void
-    {
-        $this->uncommittedEvents[] = $event;
-    }
+    // Note: getRecordedEvents(), popRecordedEvents(), and reconstitute()
+    // are provided by AggregateRootTrait
 
     /**
      * Validate entry ID
@@ -308,13 +264,5 @@ final class JournalEntry
                 sprintf('Journal entry must balance. Debits: %.2f, Credits: %.2f', $debits, $credits)
             );
         }
-    }
-
-    /**
-     * Generate a unique event ID
-     */
-    private static function generateEventId(): string
-    {
-        return 'evt-' . bin2hex(random_bytes(16));
     }
 }
