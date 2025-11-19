@@ -1,0 +1,92 @@
+name: Storebunk Accounting CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: ["8.3"]
+      fail-fast: false
+    name: PHP ${{ matrix.php-version }} Quality Checks
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: json, zip
+          coverage: none
+          tools: composer:v2
+
+      - name: Setup Composer authentication
+        run: |
+          composer config --global github-oauth.github.com ${{ secrets.GH_TOKEN }}
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-${{ matrix.php-version }}-
+
+      - name: Install dependencies
+        run: composer install --no-progress --prefer-dist --no-interaction --optimize-autoloader
+
+      - name: Run PHPUnit tests
+        run: ./vendor/bin/phpunit --testdox
+
+      - name: Run PHPStan static analysis
+        run: ./vendor/bin/phpstan analyse --no-progress --error-format=github
+        continue-on-error: true
+
+      - name: Run PHP CodeSniffer
+        run: ./vendor/bin/phpcs --report=checkstyle
+        continue-on-error: true
+
+  documentation:
+    runs-on: ubuntu-latest
+    name: Documentation Check
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for required documentation
+        run: |
+          echo "Checking for required documentation files..."
+
+          # Check main docs
+          test -f docs/README.md || { echo "Missing docs/README.md"; exit 1; }
+          test -d docs/features || { echo "Missing docs/features directory"; exit 1; }
+          test -d docs/discussions || { echo "Missing docs/discussions directory"; exit 1; }
+
+          # Check architecture docs
+          test -f docs/features/00001-accounting-library-architecture.md || { echo "Missing architecture doc"; exit 1; }
+          test -f docs/features/00003-implementation-checklist.md || { echo "Missing implementation checklist"; exit 1; }
+
+          echo "✅ All required documentation files present"
+
+      - name: Validate markdown links
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          use-quiet-mode: 'yes'
+          config-file: '.github/workflows/markdown-link-check-config.json'
+        continue-on-error: true
