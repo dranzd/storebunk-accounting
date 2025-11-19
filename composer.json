@@ -1,6 +1,6 @@
 {
     "name": "dranzd/storebunk-accounting",
-    "description": "storebunk-accounting library",
+    "description": "Storebunk Accounting library",
     "type": "library",
     "require-dev": {
         "phpunit/phpunit": "^9.5"
@@ -8,7 +8,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Dranzd\\StorebunkAccounting\\": "{\"psr-4\":{\"Dranzd\\\\Storebunk-accounting\\\\\":\"src/\"}}"
+            "Dranzd\\StorebunkAccounting\\": "src/"
         }
     },
     "minimum-stability": "stable",

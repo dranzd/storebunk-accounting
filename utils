@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 
-# Common Event Sourcing - Docker Management Script
+# Storebunk Accounting - Docker Management Script
 # Similar to Laravel Sail
 
 
@@ -24,7 +24,7 @@ fi
 
 # Function to display help
 function display_help {
-    echo "${GREEN}Common Event Sourcing - Docker Management${NC}"
+    echo "${GREEN}Storebunk Accounting - Docker Management${NC}"
     echo
     echo "${YELLOW}Usage:${NC}"
     echo "  ./utils COMMAND [options] [arguments]"

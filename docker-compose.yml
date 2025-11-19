@@ -3,7 +3,7 @@ version: '3.9'
 services:
   php:
     build: .
-    container_name: '${PROJECT_NAME}-php'
+    container_name: 'storebunk-accounting-php'
     volumes:
       - .:/app
     working_dir: /app
