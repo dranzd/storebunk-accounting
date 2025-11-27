@@ -7,13 +7,13 @@ namespace Dranzd\StorebunkAccounting\Domain\Accounting\Account;
 use Dranzd\StorebunkAccounting\Domain\Accounting\Side;
 
 /**
- * Account Type Enum
+ * Type Enum
  *
  * Represents the five fundamental account types in double-entry bookkeeping.
  *
  * @package Dranzd\StorebunkAccounting\Domain\Accounting\Account
  */
-enum AccountType: string
+enum Type: string
 {
     case Asset = 'asset';
     case Liability = 'liability';
@@ -24,8 +24,8 @@ enum AccountType: string
     /**
      * Get the normal balance side for this account type
      *
-     * Assets and Expenses have debit normal balances
-     * Liabilities, Equity, and Revenue have credit normal balances
+     * Assets and Expenses normally have debit balances.
+     * Liabilities, Equity, and Revenue normally have credit balances.
      */
     public function normalBalanceSide(): Side
     {
@@ -38,7 +38,7 @@ enum AccountType: string
     /**
      * Check if this is a balance sheet account
      */
-    public function isBalanceSheetAccount(): bool
+    public function isBalanceSheet(): bool
     {
         return match ($this) {
             self::Asset, self::Liability, self::Equity => true,
@@ -49,7 +49,7 @@ enum AccountType: string
     /**
      * Check if this is an income statement account
      */
-    public function isIncomeStatementAccount(): bool
+    public function isIncomeStatement(): bool
     {
         return match ($this) {
             self::Revenue, self::Expense => true,

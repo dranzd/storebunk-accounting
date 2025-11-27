@@ -21,7 +21,7 @@ use Dranzd\StorebunkAccounting\Application\Query\Handler\GetAllAccountsHandler;
 use Dranzd\StorebunkAccounting\Application\Query\Handler\GetLedgerHandler;
 use Dranzd\StorebunkAccounting\Application\Service\CommandBus;
 use Dranzd\StorebunkAccounting\Application\Service\QueryBus;
-use Dranzd\StorebunkAccounting\Domain\Accounting\Account\AccountType;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Account\Type;
 use Dranzd\StorebunkAccounting\Infrastructure\Persistence\EventStore\EventSourcedJournalEntryRepository;
 use Dranzd\StorebunkAccounting\Infrastructure\Persistence\EventStore\InMemoryEventStore;
 use Dranzd\StorebunkAccounting\Infrastructure\Persistence\Projection\LedgerProjection;
@@ -53,8 +53,8 @@ final class EndToEndApplicationTest extends TestCase
         // Setup projection
         $ledgerProjection = new LedgerProjection($this->ledgerReadModel, $journalEntryRepository);
         $this->eventStore->subscribe(function ($event) use ($ledgerProjection) {
-            if ($event instanceof \Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Events\JournalEntryPosted) {
-                $ledgerProjection->onJournalEntryPosted($event);
+            if ($event instanceof \Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Events\EntryPosted) {
+                $ledgerProjection->onEntryPosted($event);
             }
         });
 
@@ -97,13 +97,13 @@ final class EndToEndApplicationTest extends TestCase
     {
         // 1. Create chart of accounts
         $this->commandBus->dispatch(
-            new CreateAccountCommand('1000', 'Cash', AccountType::Asset)
+            new CreateAccountCommand('1000', 'Cash', Type::Asset)
         );
         $this->commandBus->dispatch(
-            new CreateAccountCommand('4000', 'Sales Revenue', AccountType::Revenue)
+            new CreateAccountCommand('4000', 'Sales Revenue', Type::Revenue)
         );
         $this->commandBus->dispatch(
-            new CreateAccountCommand('5000', 'Cost of Goods Sold', AccountType::Expense)
+            new CreateAccountCommand('5000', 'Cost of Goods Sold', Type::Expense)
         );
 
         // 2. Verify accounts were created
@@ -192,10 +192,10 @@ final class EndToEndApplicationTest extends TestCase
     {
         // Setup: Create accounts and entries
         $this->commandBus->dispatch(
-            new CreateAccountCommand('1000', 'Cash', AccountType::Asset)
+            new CreateAccountCommand('1000', 'Cash', Type::Asset)
         );
         $this->commandBus->dispatch(
-            new CreateAccountCommand('4000', 'Sales', AccountType::Revenue)
+            new CreateAccountCommand('4000', 'Sales', Type::Revenue)
         );
 
         $this->commandBus->dispatch(
@@ -244,10 +244,10 @@ final class EndToEndApplicationTest extends TestCase
     {
         // Create account and entry
         $this->commandBus->dispatch(
-            new CreateAccountCommand('1000', 'Cash', AccountType::Asset)
+            new CreateAccountCommand('1000', 'Cash', Type::Asset)
         );
         $this->commandBus->dispatch(
-            new CreateAccountCommand('4000', 'Sales', AccountType::Revenue)
+            new CreateAccountCommand('4000', 'Sales', Type::Revenue)
         );
 
         $this->commandBus->dispatch(
@@ -269,11 +269,11 @@ final class EndToEndApplicationTest extends TestCase
         $this->assertCount(2, $events); // Created + Posted
 
         $this->assertInstanceOf(
-            \Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Events\JournalEntryCreated::class,
+            \Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Events\EntryCreated::class,
             $events[0]
         );
         $this->assertInstanceOf(
-            \Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Events\JournalEntryPosted::class,
+            \Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Events\EntryPosted::class,
             $events[1]
         );
     }

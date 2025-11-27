@@ -19,12 +19,12 @@ final class Account
     /**
      * @param string $id Unique identifier for the account
      * @param string $name Human-readable account name
-     * @param AccountType $type The type of account (Asset, Liability, etc.)
+     * @param Type $type The type of account (Asset, Liability, etc.)
      */
     private function __construct(
         private readonly string $id,
         private string $name,
-        private readonly AccountType $type
+        private readonly Type $type
     ) {
         $this->validate();
     }
@@ -34,7 +34,7 @@ final class Account
      *
      * @throws InvalidArgumentException If validation fails
      */
-    final public static function create(string $id, string $name, AccountType $type): self
+    final public static function create(string $id, string $name, Type $type): self
     {
         return new self($id, $name, $type);
     }
@@ -58,7 +58,7 @@ final class Account
     /**
      * Get the account type
      */
-    final public function getType(): AccountType
+    final public function getType(): Type
     {
         return $this->type;
     }

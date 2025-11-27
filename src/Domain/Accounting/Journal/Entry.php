@@ -8,16 +8,16 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Dranzd\Common\EventSourcing\Domain\EventSourcing\AggregateRoot;
 use Dranzd\Common\EventSourcing\Domain\EventSourcing\AggregateRootTrait;
-use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Events\JournalEntryCreated;
-use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Events\JournalEntryPosted;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Events\EntryCreated;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Events\EntryPosted;
 use Dranzd\StorebunkAccounting\Domain\Accounting\Side;
 use InvalidArgumentException;
 use RuntimeException;
 
 /**
- * Journal Entry Aggregate Root
+ * Entry Aggregate Root
  *
- * The heart of the accounting system. A journal entry records a financial transaction
+ * The heart of the accounting system. An entry records a financial transaction
  * using double-entry bookkeeping principles.
  *
  * Invariants:
@@ -28,16 +28,16 @@ use RuntimeException;
  *
  * @package Dranzd\StorebunkAccounting\Domain\Accounting\Journal
  */
-final class JournalEntry implements AggregateRoot
+final class Entry implements AggregateRoot
 {
     use AggregateRootTrait;
 
     private string $id;
     private DateTimeInterface $date;
     private string $description;
-    /** @var JournalLine[] */
+    /** @var Line[] */
     private array $lines = [];
-    private EntryStatus $status;
+    private Status $status;
     private ?DateTimeImmutable $postedAt = null;
 
     private function __construct()
@@ -51,7 +51,7 @@ final class JournalEntry implements AggregateRoot
      * @param string $id Unique identifier
      * @param DateTimeInterface $date Transaction date
      * @param string $description Human-readable description
-     * @param JournalLine[] $lines Array of journal lines
+     * @param Line[] $lines Array of journal lines
      *
      * @throws InvalidArgumentException If validation fails
      */
@@ -72,11 +72,11 @@ final class JournalEntry implements AggregateRoot
 
         // Record event using trait's recordThat method
         $entry->recordThat(
-            JournalEntryCreated::occur(
+            EntryCreated::occur(
                 $id,
                 $date,
                 $description,
-                array_map(fn(JournalLine $line) => $line->toArray(), $lines)
+                array_map(fn(Line $line) => $line->toArray(), $lines)
             )
         );
 
@@ -107,7 +107,7 @@ final class JournalEntry implements AggregateRoot
 
         // Record event using trait's recordThat method
         $this->recordThat(
-            JournalEntryPosted::occur(
+            EntryPosted::occur(
                 $this->id,
                 new DateTimeImmutable()
             )
@@ -115,21 +115,21 @@ final class JournalEntry implements AggregateRoot
     }
 
     /**
-     * Apply JournalEntryCreated event
+     * Apply EntryCreated event
      * Called automatically by AggregateRootTrait when event is recorded
      *
      * @phpstan-ignore-next-line Method is called dynamically by AggregateRootTrait
      */
-    private function applyOnJournalEntryCreated(JournalEntryCreated $event): void
+    private function applyOnEntryCreated(EntryCreated $event): void
     {
-        $this->id = $event->getJournalEntryId();
+        $this->id = $event->getEntryId();
         $this->date = $event->getDate();
         $this->description = $event->getDescription();
-        $this->status = EntryStatus::Draft;
+        $this->status = Status::Draft;
 
         // Reconstruct lines from event
         $this->lines = array_map(
-            fn(array $lineData) => JournalLine::create(
+            fn(array $lineData) => Line::create(
                 $lineData['accountId'],
                 $lineData['amount'],
                 Side::from($lineData['side'])
@@ -139,14 +139,14 @@ final class JournalEntry implements AggregateRoot
     }
 
     /**
-     * Apply JournalEntryPosted event
+     * Apply EntryPosted event
      * Called automatically by AggregateRootTrait when event is recorded
      *
      * @phpstan-ignore-next-line Method is called dynamically by AggregateRootTrait
      */
-    private function applyOnJournalEntryPosted(JournalEntryPosted $event): void
+    private function applyOnEntryPosted(EntryPosted $event): void
     {
-        $this->status = EntryStatus::Posted;
+        $this->status = Status::Posted;
         $this->postedAt = $event->getPostedAt();
     }
 
@@ -177,7 +177,7 @@ final class JournalEntry implements AggregateRoot
     /**
      * Get the lines
      *
-     * @return JournalLine[]
+     * @return Line[]
      */
     final public function getLines(): array
     {
@@ -187,7 +187,7 @@ final class JournalEntry implements AggregateRoot
     /**
      * Get the status
      */
-    final public function getStatus(): EntryStatus
+    final public function getStatus(): Status
     {
         return $this->status;
     }
@@ -226,7 +226,7 @@ final class JournalEntry implements AggregateRoot
     /**
      * Validate lines
      *
-     * @param JournalLine[] $lines
+     * @param Line[] $lines
      */
     private static function validateLines(array $lines): void
     {
@@ -235,8 +235,8 @@ final class JournalEntry implements AggregateRoot
         }
 
         foreach ($lines as $line) {
-            if (!$line instanceof JournalLine) {
-                throw new InvalidArgumentException('All lines must be instances of JournalLine');
+            if (!$line instanceof Line) {
+                throw new InvalidArgumentException('All lines must be instances of Line');
             }
         }
     }
@@ -244,7 +244,7 @@ final class JournalEntry implements AggregateRoot
     /**
      * Validate that debits equal credits
      *
-     * @param JournalLine[] $lines
+     * @param Line[] $lines
      */
     private static function validateBalance(array $lines): void
     {

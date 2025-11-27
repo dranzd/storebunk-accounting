@@ -8,39 +8,39 @@ use DateTimeInterface;
 use Dranzd\Common\EventSourcing\Domain\EventSourcing\AbstractAggregateEvent;
 
 /**
- * Journal Entry Created Event
+ * Entry Created Event
  *
  * Emitted when a new journal entry is created in draft state.
  *
  * @package Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Events
  */
-final class JournalEntryCreated extends AbstractAggregateEvent
+final class EntryCreated extends AbstractAggregateEvent
 {
-    private string $journalEntryId;
+    private string $entryId;
     private DateTimeInterface $date;
     private string $description;
     private array $lines;
 
     private function __construct(
-        string $journalEntryId,
+        string $entryId,
         DateTimeInterface $date,
         string $description,
         array $lines
     ) {
         parent::__construct();
-        $this->journalEntryId = $journalEntryId;
+        $this->entryId = $entryId;
         $this->date = $date;
         $this->description = $description;
         $this->lines = $lines;
     }
 
     public static function occur(
-        string $journalEntryId,
+        string $entryId,
         DateTimeInterface $date,
         string $description,
         array $lines
     ): self {
-        return new self($journalEntryId, $date, $description, $lines);
+        return new self($entryId, $date, $description, $lines);
     }
 
     public static function expectedMessageName(): string
@@ -49,9 +49,9 @@ final class JournalEntryCreated extends AbstractAggregateEvent
     }
 
 
-    public function getJournalEntryId(): string
+    public function getEntryId(): string
     {
-        return $this->journalEntryId;
+        return $this->entryId;
     }
 
     public function getDate(): DateTimeInterface
@@ -72,7 +72,7 @@ final class JournalEntryCreated extends AbstractAggregateEvent
     public function toPayload(): array
     {
         return [
-            'journalEntryId' => $this->journalEntryId,
+            'entryId' => $this->entryId,
             'date' => $this->date->format('Y-m-d H:i:s'),
             'description' => $this->description,
             'lines' => $this->lines,

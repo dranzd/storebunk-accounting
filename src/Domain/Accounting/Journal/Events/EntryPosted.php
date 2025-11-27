@@ -8,32 +8,32 @@ use DateTimeImmutable;
 use Dranzd\Common\EventSourcing\Domain\EventSourcing\AbstractAggregateEvent;
 
 /**
- * Journal Entry Posted Event
+ * Entry Posted Event
  *
  * Emitted when a journal entry is posted to the ledger.
  * This triggers the ledger projection to update account balances.
  *
  * @package Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Events
  */
-final class JournalEntryPosted extends AbstractAggregateEvent
+final class EntryPosted extends AbstractAggregateEvent
 {
-    private string $journalEntryId;
+    private string $entryId;
     private DateTimeImmutable $postedAt;
 
     private function __construct(
-        string $journalEntryId,
+        string $entryId,
         DateTimeImmutable $postedAt
     ) {
         parent::__construct();
-        $this->journalEntryId = $journalEntryId;
+        $this->entryId = $entryId;
         $this->postedAt = $postedAt;
     }
 
     public static function occur(
-        string $journalEntryId,
+        string $entryId,
         DateTimeImmutable $postedAt
     ): self {
-        return new self($journalEntryId, $postedAt);
+        return new self($entryId, $postedAt);
     }
 
     public static function expectedMessageName(): string
@@ -42,9 +42,9 @@ final class JournalEntryPosted extends AbstractAggregateEvent
     }
 
 
-    public function getJournalEntryId(): string
+    public function getEntryId(): string
     {
-        return $this->journalEntryId;
+        return $this->entryId;
     }
 
     public function getPostedAt(): DateTimeImmutable
@@ -55,7 +55,7 @@ final class JournalEntryPosted extends AbstractAggregateEvent
     public function toPayload(): array
     {
         return [
-            'journalEntryId' => $this->journalEntryId,
+            'entryId' => $this->entryId,
             'postedAt' => $this->postedAt->format('Y-m-d H:i:s'),
         ];
     }

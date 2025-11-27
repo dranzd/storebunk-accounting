@@ -32,12 +32,12 @@ final class PostJournalEntryHandler
     final public function handle(PostJournalEntryCommand $command): void
     {
         // Load aggregate from event store
-        $journalEntry = $this->journalEntryRepository->load($command->journalEntryId);
+        $entry = $this->journalEntryRepository->load($command->journalEntryId);
 
-        // Post the entry (records JournalEntryPosted event)
-        $journalEntry->post();
+        // Post the entry (records EntryPosted event)
+        $entry->post();
 
         // Persist events
-        $this->journalEntryRepository->save($journalEntry);
+        $this->journalEntryRepository->save($entry);
     }
 }

@@ -14,7 +14,7 @@ use Dranzd\StorebunkAccounting\Application\Query\Handler\GetAccountHandler;
 use Dranzd\StorebunkAccounting\Application\Query\Handler\GetAllAccountsHandler;
 use Dranzd\StorebunkAccounting\Application\Query\Handler\GetLedgerHandler;
 use Dranzd\StorebunkAccounting\Domain\Accounting\Account\Account;
-use Dranzd\StorebunkAccounting\Domain\Accounting\Account\AccountType;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Account\Type;
 use Dranzd\StorebunkAccounting\Infrastructure\Persistence\ReadModel\InMemoryLedgerReadModel;
 use Dranzd\StorebunkAccounting\Infrastructure\Persistence\Repository\InMemoryAccountRepository;
 use PHPUnit\Framework\TestCase;
@@ -31,10 +31,10 @@ final class QueryHandlerTest extends TestCase
 
         // Setup test data
         $this->accountRepository->save(
-            Account::create('cash', 'Cash', AccountType::Asset)
+            Account::create('cash', 'Cash', Type::Asset)
         );
         $this->accountRepository->save(
-            Account::create('sales', 'Sales Revenue', AccountType::Revenue)
+            Account::create('sales', 'Sales Revenue', Type::Revenue)
         );
 
         $this->ledgerReadModel->addPosting(

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Dranzd\StorebunkAccounting\Application\Command\Handler;
 
 use Dranzd\StorebunkAccounting\Application\Command\CreateJournalEntryCommand;
-use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\JournalEntry;
-use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\JournalLine;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Entry;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Line;
 use Dranzd\StorebunkAccounting\Domain\Accounting\Side;
 use Dranzd\StorebunkAccounting\Domain\Port\AccountRepositoryInterface;
 use Dranzd\StorebunkAccounting\Domain\Port\JournalEntryRepositoryInterface;
@@ -48,7 +48,7 @@ final class CreateJournalEntryHandler
 
         // Create journal lines
         $lines = array_map(
-            fn(array $lineData) => JournalLine::create(
+            fn(array $lineData) => Line::create(
                 $lineData['accountId'],
                 $lineData['amount'],
                 Side::from($lineData['side'])
@@ -57,7 +57,7 @@ final class CreateJournalEntryHandler
         );
 
         // Create journal entry aggregate
-        $journalEntry = JournalEntry::create(
+        $journalEntry = Entry::create(
             $command->id,
             $command->date,
             $command->description,

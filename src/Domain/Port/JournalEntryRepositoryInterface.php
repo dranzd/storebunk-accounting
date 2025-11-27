@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dranzd\StorebunkAccounting\Domain\Port;
 
-use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\JournalEntry;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Entry;
 
 /**
  * Journal Entry Repository Interface
@@ -21,10 +21,10 @@ interface JournalEntryRepositoryInterface
      *
      * Persists all recorded events from the aggregate to the event store.
      *
-     * @param JournalEntry $journalEntry The aggregate to save
+     * @param Entry $entry The aggregate to save
      * @throws \RuntimeException If persistence fails
      */
-    public function save(JournalEntry $journalEntry): void;
+    public function save(Entry $entry): void;
 
     /**
      * Load a journal entry aggregate by ID
@@ -32,10 +32,10 @@ interface JournalEntryRepositoryInterface
      * Reconstitutes the aggregate from its event history.
      *
      * @param string $id The journal entry ID
-     * @return JournalEntry The reconstituted aggregate
+     * @return Entry The reconstituted aggregate
      * @throws \RuntimeException If aggregate not found or reconstitution fails
      */
-    public function load(string $id): JournalEntry;
+    public function load(string $id): Entry;
 
     /**
      * Check if a journal entry exists

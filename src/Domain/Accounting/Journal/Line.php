@@ -8,14 +8,14 @@ use Dranzd\StorebunkAccounting\Domain\Accounting\Side;
 use InvalidArgumentException;
 
 /**
- * Journal Line Value Object
+ * Line Value Object
  *
  * Represents a single line in a journal entry.
  * Each line affects one account with either a debit or credit.
  *
  * @package Dranzd\StorebunkAccounting\Domain\Accounting\Journal
  */
-final readonly class JournalLine
+final readonly class Line
 {
     /**
      * @param string $accountId Reference to the account being affected

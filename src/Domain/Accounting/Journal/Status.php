@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Dranzd\StorebunkAccounting\Domain\Accounting\Journal;
 
 /**
- * Entry Status Enum
+ * Status Enum
  *
  * Represents the lifecycle status of a journal entry.
  *
  * @package Dranzd\StorebunkAccounting\Domain\Accounting\Journal
  */
-enum EntryStatus: string
+enum Status: string
 {
     case Draft = 'draft';
     case Posted = 'posted';

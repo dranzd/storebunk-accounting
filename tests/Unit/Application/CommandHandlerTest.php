@@ -11,7 +11,7 @@ use Dranzd\StorebunkAccounting\Application\Command\Handler\CreateAccountHandler;
 use Dranzd\StorebunkAccounting\Application\Command\Handler\CreateJournalEntryHandler;
 use Dranzd\StorebunkAccounting\Application\Command\Handler\PostJournalEntryHandler;
 use Dranzd\StorebunkAccounting\Application\Command\PostJournalEntryCommand;
-use Dranzd\StorebunkAccounting\Domain\Accounting\Account\AccountType;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Account\Type;
 use Dranzd\StorebunkAccounting\Infrastructure\Persistence\EventStore\EventSourcedJournalEntryRepository;
 use Dranzd\StorebunkAccounting\Infrastructure\Persistence\EventStore\InMemoryEventStore;
 use Dranzd\StorebunkAccounting\Infrastructure\Persistence\Repository\InMemoryAccountRepository;
@@ -38,7 +38,7 @@ final class CommandHandlerTest extends TestCase
         $command = new CreateAccountCommand(
             'cash',
             'Cash',
-            AccountType::Asset
+            Type::Asset
         );
 
         $handler->handle($command);
@@ -47,17 +47,17 @@ final class CommandHandlerTest extends TestCase
         $account = $this->accountRepository->findById('cash');
         $this->assertNotNull($account);
         $this->assertEquals('Cash', $account->getName());
-        $this->assertEquals(AccountType::Asset, $account->getType());
+        $this->assertEquals(Type::Asset, $account->getType());
     }
 
     public function test_create_journal_entry_handler(): void
     {
         // Setup: Create accounts first
         $this->accountRepository->save(
-            \Dranzd\StorebunkAccounting\Domain\Accounting\Account\Account::create('cash', 'Cash', AccountType::Asset)
+            \Dranzd\StorebunkAccounting\Domain\Accounting\Account\Account::create('cash', 'Cash', Type::Asset)
         );
         $this->accountRepository->save(
-            \Dranzd\StorebunkAccounting\Domain\Accounting\Account\Account::create('sales', 'Sales', AccountType::Revenue)
+            \Dranzd\StorebunkAccounting\Domain\Accounting\Account\Account::create('sales', 'Sales', Type::Revenue)
         );
 
         $handler = new CreateJournalEntryHandler(
@@ -111,10 +111,10 @@ final class CommandHandlerTest extends TestCase
     {
         // Setup: Create accounts and entry
         $this->accountRepository->save(
-            \Dranzd\StorebunkAccounting\Domain\Accounting\Account\Account::create('cash', 'Cash', AccountType::Asset)
+            \Dranzd\StorebunkAccounting\Domain\Accounting\Account\Account::create('cash', 'Cash', Type::Asset)
         );
         $this->accountRepository->save(
-            \Dranzd\StorebunkAccounting\Domain\Accounting\Account\Account::create('sales', 'Sales', AccountType::Revenue)
+            \Dranzd\StorebunkAccounting\Domain\Accounting\Account\Account::create('sales', 'Sales', Type::Revenue)
         );
 
         $createHandler = new CreateJournalEntryHandler(
@@ -143,7 +143,7 @@ final class CommandHandlerTest extends TestCase
         // Verify entry was posted
         $entry = $this->journalEntryRepository->load('JE-001');
         $this->assertEquals(
-            \Dranzd\StorebunkAccounting\Domain\Accounting\Journal\EntryStatus::Posted,
+            \Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Status::Posted,
             $entry->getStatus()
         );
         $this->assertNotNull($entry->getPostedAt());
