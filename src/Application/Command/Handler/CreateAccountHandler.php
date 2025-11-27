@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Dranzd\StorebunkAccounting\Application\Command\Handler;
 
 use Dranzd\StorebunkAccounting\Application\Command\CreateAccountCommand;
-use Dranzd\StorebunkAccounting\Domain\Accounting\Account;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Account\Account;
 use Dranzd\StorebunkAccounting\Domain\Port\AccountRepositoryInterface;
 
 /**

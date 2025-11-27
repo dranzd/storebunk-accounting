@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Dranzd\StorebunkAccounting\Domain\Accounting;
+namespace Dranzd\StorebunkAccounting\Domain\Accounting\Journal;
 
 use DateTimeImmutable;
 use DateTimeInterface;
 use Dranzd\Common\EventSourcing\Domain\EventSourcing\AggregateRoot;
 use Dranzd\Common\EventSourcing\Domain\EventSourcing\AggregateRootTrait;
-use Dranzd\StorebunkAccounting\Domain\Accounting\Events\JournalEntryCreated;
-use Dranzd\StorebunkAccounting\Domain\Accounting\Events\JournalEntryPosted;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Events\JournalEntryCreated;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Events\JournalEntryPosted;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Side;
 use InvalidArgumentException;
 use RuntimeException;
 
@@ -25,7 +26,7 @@ use RuntimeException;
  * - All lines must reference existing accounts
  * - Cannot be modified after posting
  *
- * @package Dranzd\StorebunkAccounting\Domain\Accounting
+ * @package Dranzd\StorebunkAccounting\Domain\Accounting\Journal
  */
 final class JournalEntry implements AggregateRoot
 {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Dranzd\StorebunkAccounting\Application\Query\Handler;
 
 use Dranzd\StorebunkAccounting\Application\Query\GetAccountQuery;
-use Dranzd\StorebunkAccounting\Domain\Accounting\Account;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Account\Account;
 use Dranzd\StorebunkAccounting\Domain\Port\AccountRepositoryInterface;
 
 /**

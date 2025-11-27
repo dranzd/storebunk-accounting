@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dranzd\StorebunkAccounting\Infrastructure\Persistence\EventStore;
 
-use Dranzd\StorebunkAccounting\Domain\Accounting\JournalEntry;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\JournalEntry;
 use Dranzd\StorebunkAccounting\Domain\Port\JournalEntryRepositoryInterface;
 use RuntimeException;
 
@@ -57,12 +57,12 @@ final class EventSourcedJournalEntryRepository implements JournalEntryRepository
             new \DateTime(),
             'temp',
             [
-                \Dranzd\StorebunkAccounting\Domain\Accounting\JournalLine::create(
+                \Dranzd\StorebunkAccounting\Domain\Accounting\Journal\JournalLine::create(
                     'a',
                     1.0,
                     \Dranzd\StorebunkAccounting\Domain\Accounting\Side::Debit
                 ),
-                \Dranzd\StorebunkAccounting\Domain\Accounting\JournalLine::create(
+                \Dranzd\StorebunkAccounting\Domain\Accounting\Journal\JournalLine::create(
                     'b',
                     1.0,
                     \Dranzd\StorebunkAccounting\Domain\Accounting\Side::Credit

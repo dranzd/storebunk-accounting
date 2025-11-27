@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Dranzd\StorebunkAccounting\Domain\Accounting;
+namespace Dranzd\StorebunkAccounting\Domain\Accounting\Journal;
 
+use Dranzd\StorebunkAccounting\Domain\Accounting\Side;
 use InvalidArgumentException;
 
 /**
@@ -12,7 +13,7 @@ use InvalidArgumentException;
  * Represents a single line in a journal entry.
  * Each line affects one account with either a debit or credit.
  *
- * @package Dranzd\StorebunkAccounting\Domain\Accounting
+ * @package Dranzd\StorebunkAccounting\Domain\Accounting\Journal
  */
 final readonly class JournalLine
 {

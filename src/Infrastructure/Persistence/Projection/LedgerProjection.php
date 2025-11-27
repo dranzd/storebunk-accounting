@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Dranzd\StorebunkAccounting\Infrastructure\Persistence\Projection;
 
-use Dranzd\StorebunkAccounting\Domain\Accounting\Events\JournalEntryPosted;
-use Dranzd\StorebunkAccounting\Domain\Accounting\JournalEntry;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Events\JournalEntryPosted;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\JournalEntry;
 use Dranzd\StorebunkAccounting\Domain\Port\JournalEntryRepositoryInterface;
 use Dranzd\StorebunkAccounting\Infrastructure\Persistence\ReadModel\InMemoryLedgerReadModel;
 

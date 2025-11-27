@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dranzd\StorebunkAccounting\Infrastructure\Persistence\Repository;
 
-use Dranzd\StorebunkAccounting\Domain\Accounting\Account;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Account\Account;
 use Dranzd\StorebunkAccounting\Domain\Port\AccountRepositoryInterface;
 
 /**

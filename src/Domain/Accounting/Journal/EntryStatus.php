@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Dranzd\StorebunkAccounting\Domain\Accounting;
+namespace Dranzd\StorebunkAccounting\Domain\Accounting\Journal;
 
 /**
  * Entry Status Enum
  *
  * Represents the lifecycle status of a journal entry.
  *
- * @package Dranzd\StorebunkAccounting\Domain\Accounting
+ * @package Dranzd\StorebunkAccounting\Domain\Accounting\Journal
  */
 enum EntryStatus: string
 {

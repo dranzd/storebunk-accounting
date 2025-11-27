@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dranzd\StorebunkAccounting\Application\Command;
 
-use Dranzd\StorebunkAccounting\Domain\Accounting\AccountType;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Account\AccountType;
 
 /**
  * Create Account Command

@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Tests\Unit\Domain\Accounting;
 
 use DateTime;
-use Dranzd\StorebunkAccounting\Domain\Accounting\EntryStatus;
-use Dranzd\StorebunkAccounting\Domain\Accounting\JournalEntry;
-use Dranzd\StorebunkAccounting\Domain\Accounting\JournalLine;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\EntryStatus;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\JournalEntry;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\JournalLine;
 use Dranzd\StorebunkAccounting\Domain\Accounting\Side;
-use Dranzd\StorebunkAccounting\Domain\Accounting\Events\JournalEntryCreated;
-use Dranzd\StorebunkAccounting\Domain\Accounting\Events\JournalEntryPosted;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Events\JournalEntryCreated;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Events\JournalEntryPosted;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;

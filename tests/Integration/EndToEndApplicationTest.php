@@ -21,7 +21,7 @@ use Dranzd\StorebunkAccounting\Application\Query\Handler\GetAllAccountsHandler;
 use Dranzd\StorebunkAccounting\Application\Query\Handler\GetLedgerHandler;
 use Dranzd\StorebunkAccounting\Application\Service\CommandBus;
 use Dranzd\StorebunkAccounting\Application\Service\QueryBus;
-use Dranzd\StorebunkAccounting\Domain\Accounting\AccountType;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Account\AccountType;
 use Dranzd\StorebunkAccounting\Infrastructure\Persistence\EventStore\EventSourcedJournalEntryRepository;
 use Dranzd\StorebunkAccounting\Infrastructure\Persistence\EventStore\InMemoryEventStore;
 use Dranzd\StorebunkAccounting\Infrastructure\Persistence\Projection\LedgerProjection;
@@ -53,7 +53,7 @@ final class EndToEndApplicationTest extends TestCase
         // Setup projection
         $ledgerProjection = new LedgerProjection($this->ledgerReadModel, $journalEntryRepository);
         $this->eventStore->subscribe(function ($event) use ($ledgerProjection) {
-            if ($event instanceof \Dranzd\StorebunkAccounting\Domain\Accounting\Events\JournalEntryPosted) {
+            if ($event instanceof \Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Events\JournalEntryPosted) {
                 $ledgerProjection->onJournalEntryPosted($event);
             }
         });
@@ -269,11 +269,11 @@ final class EndToEndApplicationTest extends TestCase
         $this->assertCount(2, $events); // Created + Posted
 
         $this->assertInstanceOf(
-            \Dranzd\StorebunkAccounting\Domain\Accounting\Events\JournalEntryCreated::class,
+            \Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Events\JournalEntryCreated::class,
             $events[0]
         );
         $this->assertInstanceOf(
-            \Dranzd\StorebunkAccounting\Domain\Accounting\Events\JournalEntryPosted::class,
+            \Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Events\JournalEntryPosted::class,
             $events[1]
         );
     }

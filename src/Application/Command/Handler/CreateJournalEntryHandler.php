@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Dranzd\StorebunkAccounting\Application\Command\Handler;
 
 use Dranzd\StorebunkAccounting\Application\Command\CreateJournalEntryCommand;
-use Dranzd\StorebunkAccounting\Domain\Accounting\JournalEntry;
-use Dranzd\StorebunkAccounting\Domain\Accounting\JournalLine;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\JournalEntry;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\JournalLine;
 use Dranzd\StorebunkAccounting\Domain\Accounting\Side;
 use Dranzd\StorebunkAccounting\Domain\Port\AccountRepositoryInterface;
 use Dranzd\StorebunkAccounting\Domain\Port\JournalEntryRepositoryInterface;

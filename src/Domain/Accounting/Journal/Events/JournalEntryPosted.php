@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Dranzd\StorebunkAccounting\Domain\Accounting\Events;
+namespace Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Events;
 
 use DateTimeImmutable;
 use Dranzd\Common\EventSourcing\Domain\EventSourcing\AbstractAggregateEvent;
@@ -13,7 +13,7 @@ use Dranzd\Common\EventSourcing\Domain\EventSourcing\AbstractAggregateEvent;
  * Emitted when a journal entry is posted to the ledger.
  * This triggers the ledger projection to update account balances.
  *
- * @package Dranzd\StorebunkAccounting\Domain\Accounting\Events
+ * @package Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Events
  */
 final class JournalEntryPosted extends AbstractAggregateEvent
 {

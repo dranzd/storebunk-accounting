@@ -2,14 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Dranzd\StorebunkAccounting\Domain\Accounting;
+namespace Dranzd\StorebunkAccounting\Domain\Accounting\Account;
+
+use Dranzd\StorebunkAccounting\Domain\Accounting\Side;
 
 /**
  * Account Type Enum
  *
  * Represents the five fundamental account types in double-entry bookkeeping.
  *
- * @package Dranzd\StorebunkAccounting\Domain\Accounting
+ * @package Dranzd\StorebunkAccounting\Domain\Accounting\Account
  */
 enum AccountType: string
 {

@@ -13,8 +13,8 @@ use Dranzd\StorebunkAccounting\Application\Query\Handler\GetAccountBalanceHandle
 use Dranzd\StorebunkAccounting\Application\Query\Handler\GetAccountHandler;
 use Dranzd\StorebunkAccounting\Application\Query\Handler\GetAllAccountsHandler;
 use Dranzd\StorebunkAccounting\Application\Query\Handler\GetLedgerHandler;
-use Dranzd\StorebunkAccounting\Domain\Accounting\Account;
-use Dranzd\StorebunkAccounting\Domain\Accounting\AccountType;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Account\Account;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Account\AccountType;
 use Dranzd\StorebunkAccounting\Infrastructure\Persistence\ReadModel\InMemoryLedgerReadModel;
 use Dranzd\StorebunkAccounting\Infrastructure\Persistence\Repository\InMemoryAccountRepository;
 use PHPUnit\Framework\TestCase;

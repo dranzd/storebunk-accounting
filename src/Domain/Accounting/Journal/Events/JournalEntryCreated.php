@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Dranzd\StorebunkAccounting\Domain\Accounting\Events;
+namespace Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Events;
 
 use DateTimeInterface;
 use Dranzd\Common\EventSourcing\Domain\EventSourcing\AbstractAggregateEvent;
@@ -12,7 +12,7 @@ use Dranzd\Common\EventSourcing\Domain\EventSourcing\AbstractAggregateEvent;
  *
  * Emitted when a new journal entry is created in draft state.
  *
- * @package Dranzd\StorebunkAccounting\Domain\Accounting\Events
+ * @package Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Events
  */
 final class JournalEntryCreated extends AbstractAggregateEvent
 {

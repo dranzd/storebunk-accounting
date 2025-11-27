@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domain\Accounting;
 
-use Dranzd\StorebunkAccounting\Domain\Accounting\JournalLine;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\JournalLine;
 use Dranzd\StorebunkAccounting\Domain\Accounting\Side;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;

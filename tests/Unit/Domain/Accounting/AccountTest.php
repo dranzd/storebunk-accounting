@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domain\Accounting;
 
-use Dranzd\StorebunkAccounting\Domain\Accounting\Account;
-use Dranzd\StorebunkAccounting\Domain\Accounting\AccountType;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Account\Account;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Account\AccountType;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 

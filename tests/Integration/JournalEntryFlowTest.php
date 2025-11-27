@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use DateTime;
-use Dranzd\StorebunkAccounting\Domain\Accounting\Account;
-use Dranzd\StorebunkAccounting\Domain\Accounting\AccountType;
-use Dranzd\StorebunkAccounting\Domain\Accounting\JournalEntry;
-use Dranzd\StorebunkAccounting\Domain\Accounting\JournalLine;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Account\Account;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Account\AccountType;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\JournalEntry;
+use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\JournalLine;
 use Dranzd\StorebunkAccounting\Domain\Accounting\Side;
 use Dranzd\StorebunkAccounting\Infrastructure\Persistence\EventStore\EventSourcedJournalEntryRepository;
 use Dranzd\StorebunkAccounting\Infrastructure\Persistence\EventStore\InMemoryEventStore;
@@ -39,7 +39,7 @@ final class JournalEntryFlowTest extends TestCase
 
         // Subscribe projection to events
         $this->eventStore->subscribe(function ($event) {
-            if ($event instanceof \Dranzd\StorebunkAccounting\Domain\Accounting\Events\JournalEntryPosted) {
+            if ($event instanceof \Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Events\JournalEntryPosted) {
                 $this->ledgerProjection->onJournalEntryPosted($event);
             }
         });
@@ -158,7 +158,7 @@ final class JournalEntryFlowTest extends TestCase
         // Verify state was correctly reconstituted
         $this->assertEquals('JE-001', $reconstituted->getId());
         $this->assertEquals('Cash sale', $reconstituted->getDescription());
-        $this->assertEquals(\Dranzd\StorebunkAccounting\Domain\Accounting\EntryStatus::Posted, $reconstituted->getStatus());
+        $this->assertEquals(\Dranzd\StorebunkAccounting\Domain\Accounting\Journal\EntryStatus::Posted, $reconstituted->getStatus());
         $this->assertNotNull($reconstituted->getPostedAt());
         $this->assertCount(2, $reconstituted->getLines());
     }

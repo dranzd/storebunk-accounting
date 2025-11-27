@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Dranzd\StorebunkAccounting\Domain\Accounting;
+namespace Dranzd\StorebunkAccounting\Domain\Accounting\Account;
 
 use InvalidArgumentException;
 
@@ -12,7 +12,7 @@ use InvalidArgumentException;
  * Represents a single account in the chart of accounts.
  * Accounts are the fundamental building blocks where all transactions are recorded.
  *
- * @package Dranzd\StorebunkAccounting\Domain\Accounting
+ * @package Dranzd\StorebunkAccounting\Domain\Accounting\Account
  */
 final class Account
 {
