@@ -54,6 +54,8 @@
         "phpstan": "phpstan analyse",
         "phpcs": "phpcs",
         "phpcbf": "phpcbf",
+        "cs-check": "phpcs",
+        "cs-fix": "phpcbf",
         "check": [
             "@phpstan",
             "@phpcs",
