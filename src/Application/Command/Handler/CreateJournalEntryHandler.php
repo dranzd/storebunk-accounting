@@ -40,7 +40,8 @@ final class CreateJournalEntryHandler implements Handler
      */
     public function handle(Command $command): void
     {
-        /** @var CreateJournalEntryCommand $command */
+        assert($command instanceof CreateJournalEntryCommand);
+
         // Validate all account IDs exist
         foreach ($command->getLines() as $lineData) {
             if (!$this->accountRepository->exists($lineData['accountId'])) {

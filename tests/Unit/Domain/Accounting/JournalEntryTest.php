@@ -214,7 +214,7 @@ final class JournalEntryTest extends TestCase
             Line::create('a', 1.0, Side::Debit),
             Line::create('b', 1.0, Side::Credit),
         ]);
-        /** @var JournalEntry $entry */
+        /** @var Entry $entry */
         $entry = $dummyEntry->reconstituteFromHistory([$createdEvent]);
 
         $this->assertEquals('JE-001', $entry->getId());
@@ -245,7 +245,7 @@ final class JournalEntryTest extends TestCase
             Line::create('a', 1.0, Side::Debit),
             Line::create('b', 1.0, Side::Credit),
         ]);
-        /** @var JournalEntry $entry */
+        /** @var Entry $entry */
         $entry = $dummyEntry->reconstituteFromHistory([$createdEvent, $postedEvent]);
 
         $this->assertEquals(Status::Posted, $entry->getStatus());
