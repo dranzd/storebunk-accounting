@@ -19,8 +19,11 @@ use Dranzd\StorebunkAccounting\Application\Query\Handler\GetAccountBalanceHandle
 use Dranzd\StorebunkAccounting\Application\Query\Handler\GetAccountHandler;
 use Dranzd\StorebunkAccounting\Application\Query\Handler\GetAllAccountsHandler;
 use Dranzd\StorebunkAccounting\Application\Query\Handler\GetLedgerHandler;
-use Dranzd\StorebunkAccounting\Application\Service\CommandBus;
-use Dranzd\StorebunkAccounting\Application\Service\QueryBus;
+use Dranzd\Common\Cqrs\Application\Command\Bus as CommandBusInterface;
+use Dranzd\Common\Cqrs\Application\Query\Bus as QueryBusInterface;
+use Dranzd\Common\Cqrs\Infrastructure\Bus\SimpleCommandBus;
+use Dranzd\Common\Cqrs\Infrastructure\Bus\SimpleQueryBus;
+use Dranzd\Common\Cqrs\Infrastructure\HandlerRegistry\InMemoryHandlerRegistry;
 use Dranzd\StorebunkAccounting\Domain\Accounting\Account\Type;
 use Dranzd\StorebunkAccounting\Infrastructure\Persistence\EventStore\EventSourcedJournalEntryRepository;
 use Dranzd\StorebunkAccounting\Infrastructure\Persistence\EventStore\InMemoryEventStore;
@@ -37,8 +40,8 @@ use PHPUnit\Framework\TestCase;
  */
 final class EndToEndApplicationTest extends TestCase
 {
-    private CommandBus $commandBus;
-    private QueryBus $queryBus;
+    private CommandBusInterface $commandBus;
+    private QueryBusInterface $queryBus;
     private InMemoryEventStore $eventStore;
     private InMemoryLedgerReadModel $ledgerReadModel;
 
@@ -58,39 +61,41 @@ final class EndToEndApplicationTest extends TestCase
             }
         });
 
-        // Setup command bus
-        $this->commandBus = new CommandBus();
-        $this->commandBus->register(
+        // Setup command bus with handler registry
+        $commandRegistry = new InMemoryHandlerRegistry();
+        $commandRegistry->register(
             CreateAccountCommand::class,
-            new CreateAccountHandler($accountRepository)
+            fn($cmd) => (new CreateAccountHandler($accountRepository))->handle($cmd)
         );
-        $this->commandBus->register(
+        $commandRegistry->register(
             CreateJournalEntryCommand::class,
-            new CreateJournalEntryHandler($journalEntryRepository, $accountRepository)
+            fn($cmd) => (new CreateJournalEntryHandler($journalEntryRepository, $accountRepository))->handle($cmd)
         );
-        $this->commandBus->register(
+        $commandRegistry->register(
             PostJournalEntryCommand::class,
-            new PostJournalEntryHandler($journalEntryRepository)
+            fn($cmd) => (new PostJournalEntryHandler($journalEntryRepository))->handle($cmd)
         );
+        $this->commandBus = new SimpleCommandBus($commandRegistry);
 
-        // Setup query bus
-        $this->queryBus = new QueryBus();
-        $this->queryBus->register(
+        // Setup query bus with handler registry
+        $queryRegistry = new InMemoryHandlerRegistry();
+        $queryRegistry->register(
             GetAccountQuery::class,
-            new GetAccountHandler($accountRepository)
+            fn($qry) => (new GetAccountHandler($accountRepository))->handle($qry)
         );
-        $this->queryBus->register(
+        $queryRegistry->register(
             GetAllAccountsQuery::class,
-            new GetAllAccountsHandler($accountRepository)
+            fn($qry) => (new GetAllAccountsHandler($accountRepository))->handle($qry)
         );
-        $this->queryBus->register(
+        $queryRegistry->register(
             GetAccountBalanceQuery::class,
-            new GetAccountBalanceHandler($this->ledgerReadModel)
+            fn($qry) => (new GetAccountBalanceHandler($this->ledgerReadModel))->handle($qry)
         );
-        $this->queryBus->register(
+        $queryRegistry->register(
             GetLedgerQuery::class,
-            new GetLedgerHandler($this->ledgerReadModel)
+            fn($qry) => (new GetLedgerHandler($this->ledgerReadModel))->handle($qry)
         );
+        $this->queryBus = new SimpleQueryBus($queryRegistry);
     }
 
     public function test_complete_accounting_workflow(): void
@@ -107,10 +112,10 @@ final class EndToEndApplicationTest extends TestCase
         );
 
         // 2. Verify accounts were created
-        $allAccounts = $this->queryBus->ask(GetAllAccountsQuery::create());
+        $allAccounts = $this->queryBus->ask(GetAllAccountsQuery::create())->getData();
         $this->assertCount(3, $allAccounts);
 
-        $cashAccount = $this->queryBus->ask(GetAccountQuery::create('1000'));
+        $cashAccount = $this->queryBus->ask(GetAccountQuery::create('1000'))->getData();
         $this->assertNotNull($cashAccount);
         $this->assertEquals('Cash', $cashAccount->getName());
 
@@ -159,13 +164,13 @@ final class EndToEndApplicationTest extends TestCase
         // 5. Query account balances
         $cashBalance = $this->queryBus->ask(
             GetAccountBalanceQuery::create('default', '1000')
-        );
+        )->getData();
         $salesBalance = $this->queryBus->ask(
             GetAccountBalanceQuery::create('default', '4000')
-        );
+        )->getData();
         $cogsBalance = $this->queryBus->ask(
             GetAccountBalanceQuery::create('default', '5000')
-        );
+        )->getData();
 
         // 6. Verify balances
         $this->assertEquals(1200.00, $cashBalance); // 1000 + 500 - 300
@@ -175,7 +180,7 @@ final class EndToEndApplicationTest extends TestCase
         // 7. Query ledger postings
         $cashPostings = $this->queryBus->ask(
             GetLedgerQuery::create('default', '1000')
-        );
+        )->getData();
         $this->assertCount(3, $cashPostings);
 
         // 8. Verify posting details
@@ -233,7 +238,7 @@ final class EndToEndApplicationTest extends TestCase
                 new DateTime('2025-11-20'),
                 new DateTime('2025-11-22')
             )
-        );
+        )->getData();
 
         // Should only get JE-002
         $this->assertCount(1, $postings);
