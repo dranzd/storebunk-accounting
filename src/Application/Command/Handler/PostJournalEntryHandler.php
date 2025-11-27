@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Dranzd\StorebunkAccounting\Application\Command\Handler;
 
+use Dranzd\Common\Cqrs\Application\Command\Handler;
+use Dranzd\Common\Cqrs\Domain\Message\Command;
 use Dranzd\StorebunkAccounting\Application\Command\PostJournalEntryCommand;
 use Dranzd\StorebunkAccounting\Domain\Port\JournalEntryRepositoryInterface;
 
@@ -17,7 +19,7 @@ use Dranzd\StorebunkAccounting\Domain\Port\JournalEntryRepositoryInterface;
  *
  * @package Dranzd\StorebunkAccounting\Application\Command\Handler
  */
-final class PostJournalEntryHandler
+final class PostJournalEntryHandler implements Handler
 {
     public function __construct(
         private readonly JournalEntryRepositoryInterface $journalEntryRepository
@@ -27,12 +29,14 @@ final class PostJournalEntryHandler
     /**
      * Handle the command
      *
+     * @param Command $command The command to handle
      * @throws \RuntimeException If journal entry not found or cannot be posted
      */
-    final public function handle(PostJournalEntryCommand $command): void
+    public function handle(Command $command): void
     {
+        /** @var PostJournalEntryCommand $command */
         // Load aggregate from event store
-        $entry = $this->journalEntryRepository->load($command->journalEntryId);
+        $entry = $this->journalEntryRepository->load($command->getEntryId());
 
         // Post the entry (records EntryPosted event)
         $entry->post();

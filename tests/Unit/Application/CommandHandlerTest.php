@@ -35,7 +35,7 @@ final class CommandHandlerTest extends TestCase
     {
         $handler = new CreateAccountHandler($this->accountRepository);
 
-        $command = new CreateAccountCommand(
+        $command = CreateAccountCommand::create(
             'cash',
             'Cash',
             Type::Asset
@@ -65,7 +65,7 @@ final class CommandHandlerTest extends TestCase
             $this->accountRepository
         );
 
-        $command = new CreateJournalEntryCommand(
+        $command = CreateJournalEntryCommand::create(
             'JE-001',
             new DateTime('2025-11-19'),
             'Cash sale',
@@ -91,7 +91,7 @@ final class CommandHandlerTest extends TestCase
             $this->accountRepository
         );
 
-        $command = new CreateJournalEntryCommand(
+        $command = CreateJournalEntryCommand::create(
             'JE-001',
             new DateTime('2025-11-19'),
             'Cash sale',
@@ -122,7 +122,7 @@ final class CommandHandlerTest extends TestCase
             $this->accountRepository
         );
 
-        $createCommand = new CreateJournalEntryCommand(
+        $createCommand = CreateJournalEntryCommand::create(
             'JE-001',
             new DateTime('2025-11-19'),
             'Cash sale',
@@ -136,7 +136,7 @@ final class CommandHandlerTest extends TestCase
 
         // Post the entry
         $postHandler = new PostJournalEntryHandler($this->journalEntryRepository);
-        $postCommand = new PostJournalEntryCommand('JE-001');
+        $postCommand = PostJournalEntryCommand::create('JE-001');
 
         $postHandler->handle($postCommand);
 

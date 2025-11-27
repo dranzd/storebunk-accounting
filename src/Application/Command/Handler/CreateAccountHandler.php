@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Dranzd\StorebunkAccounting\Application\Command\Handler;
 
+use Dranzd\Common\Cqrs\Application\Command\Handler;
+use Dranzd\Common\Cqrs\Domain\Message\Command;
 use Dranzd\StorebunkAccounting\Application\Command\CreateAccountCommand;
 use Dranzd\StorebunkAccounting\Domain\Accounting\Account\Account;
 use Dranzd\StorebunkAccounting\Domain\Port\AccountRepositoryInterface;
@@ -17,7 +19,7 @@ use Dranzd\StorebunkAccounting\Domain\Port\AccountRepositoryInterface;
  *
  * @package Dranzd\StorebunkAccounting\Application\Command\Handler
  */
-final class CreateAccountHandler
+final class CreateAccountHandler implements Handler
 {
     public function __construct(
         private readonly AccountRepositoryInterface $accountRepository
@@ -27,15 +29,17 @@ final class CreateAccountHandler
     /**
      * Handle the command
      *
+     * @param Command $command The command to handle
      * @throws \InvalidArgumentException If validation fails
      */
-    final public function handle(CreateAccountCommand $command): void
+    public function handle(Command $command): void
     {
+        /** @var CreateAccountCommand $command */
         // Create account entity
         $account = Account::create(
-            $command->id,
-            $command->name,
-            $command->type
+            $command->getAccountId(),
+            $command->getName(),
+            $command->getType()
         );
 
         // Persist to repository

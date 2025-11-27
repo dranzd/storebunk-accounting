@@ -97,13 +97,13 @@ final class EndToEndApplicationTest extends TestCase
     {
         // 1. Create chart of accounts
         $this->commandBus->dispatch(
-            new CreateAccountCommand('1000', 'Cash', Type::Asset)
+            CreateAccountCommand::create('1000', 'Cash', Type::Asset)
         );
         $this->commandBus->dispatch(
-            new CreateAccountCommand('4000', 'Sales Revenue', Type::Revenue)
+            CreateAccountCommand::create('4000', 'Sales Revenue', Type::Revenue)
         );
         $this->commandBus->dispatch(
-            new CreateAccountCommand('5000', 'Cost of Goods Sold', Type::Expense)
+            CreateAccountCommand::create('5000', 'Cost of Goods Sold', Type::Expense)
         );
 
         // 2. Verify accounts were created
@@ -116,7 +116,7 @@ final class EndToEndApplicationTest extends TestCase
 
         // 3. Create journal entries
         $this->commandBus->dispatch(
-            new CreateJournalEntryCommand(
+            CreateJournalEntryCommand::create(
                 'JE-001',
                 new DateTime('2025-11-19'),
                 'Cash sale #1',
@@ -128,7 +128,7 @@ final class EndToEndApplicationTest extends TestCase
         );
 
         $this->commandBus->dispatch(
-            new CreateJournalEntryCommand(
+            CreateJournalEntryCommand::create(
                 'JE-002',
                 new DateTime('2025-11-20'),
                 'Cash sale #2',
@@ -140,7 +140,7 @@ final class EndToEndApplicationTest extends TestCase
         );
 
         $this->commandBus->dispatch(
-            new CreateJournalEntryCommand(
+            CreateJournalEntryCommand::create(
                 'JE-003',
                 new DateTime('2025-11-21'),
                 'Record COGS',
@@ -152,9 +152,9 @@ final class EndToEndApplicationTest extends TestCase
         );
 
         // 4. Post journal entries
-        $this->commandBus->dispatch(new PostJournalEntryCommand('JE-001'));
-        $this->commandBus->dispatch(new PostJournalEntryCommand('JE-002'));
-        $this->commandBus->dispatch(new PostJournalEntryCommand('JE-003'));
+        $this->commandBus->dispatch(PostJournalEntryCommand::create('JE-001'));
+        $this->commandBus->dispatch(PostJournalEntryCommand::create('JE-002'));
+        $this->commandBus->dispatch(PostJournalEntryCommand::create('JE-003'));
 
         // 5. Query account balances
         $cashBalance = $this->queryBus->ask(
@@ -192,14 +192,14 @@ final class EndToEndApplicationTest extends TestCase
     {
         // Setup: Create accounts and entries
         $this->commandBus->dispatch(
-            new CreateAccountCommand('1000', 'Cash', Type::Asset)
+            CreateAccountCommand::create('1000', 'Cash', Type::Asset)
         );
         $this->commandBus->dispatch(
-            new CreateAccountCommand('4000', 'Sales', Type::Revenue)
+            CreateAccountCommand::create('4000', 'Sales', Type::Revenue)
         );
 
         $this->commandBus->dispatch(
-            new CreateJournalEntryCommand(
+            CreateJournalEntryCommand::create(
                 'JE-001',
                 new DateTime('2025-11-19'),
                 'Sale on Nov 19',
@@ -211,7 +211,7 @@ final class EndToEndApplicationTest extends TestCase
         );
 
         $this->commandBus->dispatch(
-            new CreateJournalEntryCommand(
+            CreateJournalEntryCommand::create(
                 'JE-002',
                 new DateTime('2025-11-21'),
                 'Sale on Nov 21',
@@ -222,8 +222,8 @@ final class EndToEndApplicationTest extends TestCase
             )
         );
 
-        $this->commandBus->dispatch(new PostJournalEntryCommand('JE-001'));
-        $this->commandBus->dispatch(new PostJournalEntryCommand('JE-002'));
+        $this->commandBus->dispatch(PostJournalEntryCommand::create('JE-001'));
+        $this->commandBus->dispatch(PostJournalEntryCommand::create('JE-002'));
 
         // Query with date filter
         $postings = $this->queryBus->ask(
@@ -244,14 +244,14 @@ final class EndToEndApplicationTest extends TestCase
     {
         // Create account and entry
         $this->commandBus->dispatch(
-            new CreateAccountCommand('1000', 'Cash', Type::Asset)
+            CreateAccountCommand::create('1000', 'Cash', Type::Asset)
         );
         $this->commandBus->dispatch(
-            new CreateAccountCommand('4000', 'Sales', Type::Revenue)
+            CreateAccountCommand::create('4000', 'Sales', Type::Revenue)
         );
 
         $this->commandBus->dispatch(
-            new CreateJournalEntryCommand(
+            CreateJournalEntryCommand::create(
                 'JE-001',
                 new DateTime('2025-11-19'),
                 'Test entry',
@@ -262,7 +262,7 @@ final class EndToEndApplicationTest extends TestCase
             )
         );
 
-        $this->commandBus->dispatch(new PostJournalEntryCommand('JE-001'));
+        $this->commandBus->dispatch(PostJournalEntryCommand::create('JE-001'));
 
         // Verify events were stored
         $events = $this->eventStore->readStream('journal-entry-JE-001');

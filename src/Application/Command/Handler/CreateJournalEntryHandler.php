@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Dranzd\StorebunkAccounting\Application\Command\Handler;
 
+use Dranzd\Common\Cqrs\Application\Command\Handler;
+use Dranzd\Common\Cqrs\Domain\Message\Command;
 use Dranzd\StorebunkAccounting\Application\Command\CreateJournalEntryCommand;
 use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Entry;
 use Dranzd\StorebunkAccounting\Domain\Accounting\Journal\Line;
@@ -22,7 +24,7 @@ use InvalidArgumentException;
  *
  * @package Dranzd\StorebunkAccounting\Application\Command\Handler
  */
-final class CreateJournalEntryHandler
+final class CreateJournalEntryHandler implements Handler
 {
     public function __construct(
         private readonly JournalEntryRepositoryInterface $journalEntryRepository,
@@ -33,12 +35,14 @@ final class CreateJournalEntryHandler
     /**
      * Handle the command
      *
+     * @param Command $command The command to handle
      * @throws InvalidArgumentException If validation fails
      */
-    final public function handle(CreateJournalEntryCommand $command): void
+    public function handle(Command $command): void
     {
+        /** @var CreateJournalEntryCommand $command */
         // Validate all account IDs exist
-        foreach ($command->lines as $lineData) {
+        foreach ($command->getLines() as $lineData) {
             if (!$this->accountRepository->exists($lineData['accountId'])) {
                 throw new InvalidArgumentException(
                     "Account not found: {$lineData['accountId']}"
@@ -53,14 +57,14 @@ final class CreateJournalEntryHandler
                 $lineData['amount'],
                 Side::from($lineData['side'])
             ),
-            $command->lines
+            $command->getLines()
         );
 
         // Create journal entry aggregate
         $journalEntry = Entry::create(
-            $command->id,
-            $command->date,
-            $command->description,
+            $command->getEntryId(),
+            $command->getDate(),
+            $command->getDescription(),
             $lines
         );
 
