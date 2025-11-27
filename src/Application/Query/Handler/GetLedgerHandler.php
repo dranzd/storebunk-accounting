@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Dranzd\StorebunkAccounting\Application\Query\Handler;
 
+use Dranzd\Common\Cqrs\Application\Query\Handler;
+use Dranzd\Common\Cqrs\Application\Query\Result;
+use Dranzd\Common\Cqrs\Domain\Message\Query;
 use Dranzd\StorebunkAccounting\Application\Query\GetLedgerQuery;
+use Dranzd\StorebunkAccounting\Application\Query\QueryResult;
 use Dranzd\StorebunkAccounting\Domain\Port\LedgerReadModelInterface;
 
 /**
@@ -14,7 +18,7 @@ use Dranzd\StorebunkAccounting\Domain\Port\LedgerReadModelInterface;
  *
  * @package Dranzd\StorebunkAccounting\Application\Query\Handler
  */
-final class GetLedgerHandler
+final class GetLedgerHandler implements Handler
 {
     public function __construct(
         private readonly LedgerReadModelInterface $ledgerReadModel
@@ -24,15 +28,19 @@ final class GetLedgerHandler
     /**
      * Handle the query
      *
-     * @return array Array of ledger postings
+     * @param Query $query The query to handle
+     * @return Result The query result
      */
-    final public function handle(GetLedgerQuery $query): array
+    public function handle(Query $query): Result
     {
-        return $this->ledgerReadModel->getLedgerPostings(
-            $query->tenantId,
-            $query->accountId,
-            $query->fromDate,
-            $query->toDate
+        /** @var GetLedgerQuery $query */
+        $postings = $this->ledgerReadModel->getLedgerPostings(
+            $query->getTenantId(),
+            $query->getAccountId(),
+            $query->getFromDate(),
+            $query->getToDate()
         );
+
+        return QueryResult::success($postings);
     }
 }

@@ -36,7 +36,7 @@ final class QueryBus
      * Dispatch a query to its handler
      *
      * @param object $query The query to dispatch
-     * @return mixed The query result
+     * @return mixed The query result data (extracted from Result)
      * @throws RuntimeException If no handler registered
      */
     final public function ask(object $query): mixed
@@ -48,6 +48,13 @@ final class QueryBus
         }
 
         $handler = $this->handlers[$queryClass];
-        return $handler->handle($query);
+        $result = $handler->handle($query);
+
+        // Extract data from Result if handler returns Result interface
+        if ($result instanceof \Dranzd\Common\Cqrs\Application\Query\Result) {
+            return $result->getData();
+        }
+
+        return $result;
     }
 }

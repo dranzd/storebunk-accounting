@@ -51,9 +51,10 @@ final class QueryHandlerTest extends TestCase
     public function test_get_account_handler(): void
     {
         $handler = new GetAccountHandler($this->accountRepository);
-        $query = new GetAccountQuery('cash');
+        $query = GetAccountQuery::create('cash');
 
-        $account = $handler->handle($query);
+        $result = $handler->handle($query);
+        $account = $result->getData();
 
         $this->assertNotNull($account);
         $this->assertEquals('cash', $account->getId());
@@ -63,9 +64,10 @@ final class QueryHandlerTest extends TestCase
     public function test_get_account_handler_returns_null_for_nonexistent(): void
     {
         $handler = new GetAccountHandler($this->accountRepository);
-        $query = new GetAccountQuery('nonexistent');
+        $query = GetAccountQuery::create('nonexistent');
 
-        $account = $handler->handle($query);
+        $result = $handler->handle($query);
+        $account = $result->getData();
 
         $this->assertNull($account);
     }
@@ -73,9 +75,10 @@ final class QueryHandlerTest extends TestCase
     public function test_get_all_accounts_handler(): void
     {
         $handler = new GetAllAccountsHandler($this->accountRepository);
-        $query = new GetAllAccountsQuery();
+        $query = GetAllAccountsQuery::create();
 
-        $accounts = $handler->handle($query);
+        $result = $handler->handle($query);
+        $accounts = $result->getData();
 
         $this->assertCount(2, $accounts);
     }
@@ -83,9 +86,10 @@ final class QueryHandlerTest extends TestCase
     public function test_get_account_balance_handler(): void
     {
         $handler = new GetAccountBalanceHandler($this->ledgerReadModel);
-        $query = new GetAccountBalanceQuery('default', 'cash');
+        $query = GetAccountBalanceQuery::create('default', 'cash');
 
-        $balance = $handler->handle($query);
+        $result = $handler->handle($query);
+        $balance = $result->getData();
 
         $this->assertEquals(500.00, $balance);
     }
@@ -93,9 +97,10 @@ final class QueryHandlerTest extends TestCase
     public function test_get_ledger_handler(): void
     {
         $handler = new GetLedgerHandler($this->ledgerReadModel);
-        $query = new GetLedgerQuery('default', 'cash');
+        $query = GetLedgerQuery::create('default', 'cash');
 
-        $postings = $handler->handle($query);
+        $result = $handler->handle($query);
+        $postings = $result->getData();
 
         $this->assertCount(1, $postings);
         $this->assertEquals('JE-001', $postings[0]['entryId']);
@@ -105,14 +110,15 @@ final class QueryHandlerTest extends TestCase
     public function test_get_ledger_handler_with_date_filter(): void
     {
         $handler = new GetLedgerHandler($this->ledgerReadModel);
-        $query = new GetLedgerQuery(
+        $query = GetLedgerQuery::create(
             'default',
             'cash',
             new DateTime('2025-11-20'),
             null
         );
 
-        $postings = $handler->handle($query);
+        $result = $handler->handle($query);
+        $postings = $result->getData();
 
         // Should be empty because posting is on 2025-11-19
         $this->assertCount(0, $postings);

@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Dranzd\StorebunkAccounting\Application\Query\Handler;
 
+use Dranzd\Common\Cqrs\Application\Query\Handler;
+use Dranzd\Common\Cqrs\Application\Query\Result;
+use Dranzd\Common\Cqrs\Domain\Message\Query;
 use Dranzd\StorebunkAccounting\Application\Query\GetAccountQuery;
-use Dranzd\StorebunkAccounting\Domain\Accounting\Account\Account;
+use Dranzd\StorebunkAccounting\Application\Query\QueryResult;
 use Dranzd\StorebunkAccounting\Domain\Port\AccountRepositoryInterface;
 
 /**
@@ -15,7 +18,7 @@ use Dranzd\StorebunkAccounting\Domain\Port\AccountRepositoryInterface;
  *
  * @package Dranzd\StorebunkAccounting\Application\Query\Handler
  */
-final class GetAccountHandler
+final class GetAccountHandler implements Handler
 {
     public function __construct(
         private readonly AccountRepositoryInterface $accountRepository
@@ -25,10 +28,14 @@ final class GetAccountHandler
     /**
      * Handle the query
      *
-     * @return Account|null The account or null if not found
+     * @param Query $query The query to handle
+     * @return Result The query result
      */
-    final public function handle(GetAccountQuery $query): ?Account
+    public function handle(Query $query): Result
     {
-        return $this->accountRepository->findById($query->accountId);
+        /** @var GetAccountQuery $query */
+        $account = $this->accountRepository->findById($query->getAccountId());
+
+        return QueryResult::success($account);
     }
 }

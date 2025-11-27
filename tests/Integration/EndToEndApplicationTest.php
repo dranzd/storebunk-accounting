@@ -107,10 +107,10 @@ final class EndToEndApplicationTest extends TestCase
         );
 
         // 2. Verify accounts were created
-        $allAccounts = $this->queryBus->ask(new GetAllAccountsQuery());
+        $allAccounts = $this->queryBus->ask(GetAllAccountsQuery::create());
         $this->assertCount(3, $allAccounts);
 
-        $cashAccount = $this->queryBus->ask(new GetAccountQuery('1000'));
+        $cashAccount = $this->queryBus->ask(GetAccountQuery::create('1000'));
         $this->assertNotNull($cashAccount);
         $this->assertEquals('Cash', $cashAccount->getName());
 
@@ -158,13 +158,13 @@ final class EndToEndApplicationTest extends TestCase
 
         // 5. Query account balances
         $cashBalance = $this->queryBus->ask(
-            new GetAccountBalanceQuery('default', '1000')
+            GetAccountBalanceQuery::create('default', '1000')
         );
         $salesBalance = $this->queryBus->ask(
-            new GetAccountBalanceQuery('default', '4000')
+            GetAccountBalanceQuery::create('default', '4000')
         );
         $cogsBalance = $this->queryBus->ask(
-            new GetAccountBalanceQuery('default', '5000')
+            GetAccountBalanceQuery::create('default', '5000')
         );
 
         // 6. Verify balances
@@ -174,7 +174,7 @@ final class EndToEndApplicationTest extends TestCase
 
         // 7. Query ledger postings
         $cashPostings = $this->queryBus->ask(
-            new GetLedgerQuery('default', '1000')
+            GetLedgerQuery::create('default', '1000')
         );
         $this->assertCount(3, $cashPostings);
 
@@ -227,7 +227,7 @@ final class EndToEndApplicationTest extends TestCase
 
         // Query with date filter
         $postings = $this->queryBus->ask(
-            new GetLedgerQuery(
+            GetLedgerQuery::create(
                 'default',
                 '1000',
                 new DateTime('2025-11-20'),

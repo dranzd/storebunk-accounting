@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Dranzd\StorebunkAccounting\Application\Query\Handler;
 
+use Dranzd\Common\Cqrs\Application\Query\Handler;
+use Dranzd\Common\Cqrs\Application\Query\Result;
+use Dranzd\Common\Cqrs\Domain\Message\Query;
 use Dranzd\StorebunkAccounting\Application\Query\GetAccountBalanceQuery;
+use Dranzd\StorebunkAccounting\Application\Query\QueryResult;
 use Dranzd\StorebunkAccounting\Domain\Port\LedgerReadModelInterface;
 
 /**
@@ -14,7 +18,7 @@ use Dranzd\StorebunkAccounting\Domain\Port\LedgerReadModelInterface;
  *
  * @package Dranzd\StorebunkAccounting\Application\Query\Handler
  */
-final class GetAccountBalanceHandler
+final class GetAccountBalanceHandler implements Handler
 {
     public function __construct(
         private readonly LedgerReadModelInterface $ledgerReadModel
@@ -24,13 +28,17 @@ final class GetAccountBalanceHandler
     /**
      * Handle the query
      *
-     * @return float The account balance
+     * @param Query $query The query to handle
+     * @return Result The query result
      */
-    final public function handle(GetAccountBalanceQuery $query): float
+    public function handle(Query $query): Result
     {
-        return $this->ledgerReadModel->getAccountBalance(
-            $query->tenantId,
-            $query->accountId
+        /** @var GetAccountBalanceQuery $query */
+        $balance = $this->ledgerReadModel->getAccountBalance(
+            $query->getTenantId(),
+            $query->getAccountId()
         );
+
+        return QueryResult::success($balance);
     }
 }
